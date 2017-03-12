@@ -6,6 +6,13 @@ import argparse
 import json
 import sys
 
+temp_file_location= "/tmp/plaintext"
+
+def write_to_file(plaintext):
+	f = open(temp_file_location, 'w')
+	f.write(str(plaintext,'utf-8')) 
+	f.close()
+
 # Init parser for command line args.
 parser = argparse.ArgumentParser("Decrypt KMS encrypted string")
 parser.add_argument("-e", "--encrypted-string", required=True,  help='KMS encrypted string that needs decrypting')
@@ -42,11 +49,10 @@ if (args.print_plaintext):
 		print (str(plaintext, 'utf-8'))
 		print ("You should definitely consult someone or may be print it on a t-shirt ")
 	else:
-		print("hmmmm good call")
+		print("hmmmm good call. Written to " + temp_file_location)
+		write_to_file(plaintext)
 else:
 	# write plaintext to file.
-	f = open('/tmp/plaintext', 'w')
-	f.write(str(plaintext,'utf-8')) 
-	f.close()
+	write_to_file(plaintext)
 
 
