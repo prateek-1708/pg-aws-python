@@ -3,7 +3,6 @@
 import boto3
 import base64
 import argparse
-import json
 import sys
 import os
 import time
@@ -21,14 +20,13 @@ def aws_creds_expiry():
     return time.strftime('%Y-%m-%d %a %H:%M:%S', time.localtime(int(os.environ['AWS_CREDS_EXPIRY'])))
 
 # Init parser for command line args.
-parser = argparse.ArgumentParser("Decrypt KMS encrypted string")
-parser.add_argument("-e", "--encrypted-string", required=True,  help='KMS encrypted string that needs decrypting')
-parser.add_argument("-p", "--print-plaintext", action='store_true', default=False,  help='KMS encrypted string that needs decrypting')
+parser = argparse.ArgumentParser("Encrypt plaintext with KMS")
+parser.add_argument("-p", "--plaintext", required=True,  help='Plaintext string to be encrypted')
+parser.add_argument("-k", "--key-id", required=True, help='KMS key id to use')
 args = parser.parse_args()
 
 # Get the session to get the region name;
 session = boto3.session.Session()
-awsRegion = session.region_name
 
 # create the kms client to do the decrypttion
 kmsClient = boto3.client('kms')
@@ -51,11 +49,11 @@ except Exception as e:
 plaintext = decrypted['Plaintext']
 
 
-if args.print_plaintext:
+if (args.print_plaintext):
     print(" Are you alone ? No body staring at your monitor ? OK to print plaintext ? [y or n]", end='->  ', flush=True)
     userSays = sys.stdin.readline().rstrip('\n')
     print("++++++++++++++++++++ Plain Text Alert +++++++++++++++++++++")
-    if (userSays == 'y'):
+    if userSays == 'y':
         print (str(plaintext, 'utf-8'))
         print ("You should definitely consult someone or may be print it on a t-shirt ")
     else:
