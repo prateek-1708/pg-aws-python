@@ -1,43 +1,62 @@
 #!/usr/local/bin/python3
 
 import boto3
-import base64
 import argparse
 import sys
 import os
 import time
-
-temp_file_location= "/tmp/plaintext"
-
-
-def write_to_file(plaintext):
-    f = open(temp_file_location, 'w')
-    f.write(str(plaintext,'utf-8'))
-    f.close()
+import pprint
+import base64
 
 
+##############################################################################
 def aws_creds_expiry():
     return time.strftime('%Y-%m-%d %a %H:%M:%S', time.localtime(int(os.environ['AWS_CREDS_EXPIRY'])))
 
+
+##############################################################################
+def read_arguments():
+
+    parser = argparse.ArgumentParser("Encrypt plaintext with KMS")
+    parser.add_argument(
+        "-p",
+        "--plaintext",
+        required=True,
+        help='Plaintext string to be encrypted'
+    )
+    parser.add_argument(
+        "-k",
+        "--key-id",
+        required=True,
+        help='KMS key id to use'
+    )
+    args = parser.parse_args()
+
+    if not args.plaintext:
+        parser.error("I mean you need to pass something to encrypt")
+
+    if not args.key_id:
+        parser.error("Key to use to encrypt")
+
+    return args
+
 # Init parser for command line args.
-parser = argparse.ArgumentParser("Encrypt plaintext with KMS")
-parser.add_argument("-p", "--plaintext", required=True,  help='Plaintext string to be encrypted')
-parser.add_argument("-k", "--key-id", required=True, help='KMS key id to use')
-args = parser.parse_args()
+
+pass_args = read_arguments()
 
 # Get the session to get the region name;
 session = boto3.session.Session()
+awsRegion = session.region_name
 
-# create the kms client to do the decrypttion
+# create the kms client to do the decryption
 kmsClient = boto3.client('kms')
-
-# base64 decode into a ciphertext blob
-blob = base64.b64decode(args.encrypted_string)
 
 # KMS decrypt
 try:
-    awsRegion = session.region_name
-    decrypted = kmsClient.decrypt(CiphertextBlob=blob)
+    encrypted = kmsClient.encrypt(
+        KeyId=pass_args.key_id,
+        Plaintext=pass_args.plaintext
+    )
 except Exception as e:
     print(str(e))
     print(awsRegion)
@@ -46,21 +65,8 @@ except Exception as e:
 
 
 # plaintext from the decrypted
-plaintext = decrypted['Plaintext']
+encrypted = base64.b64encode(encrypted['CiphertextBlob'])
+print(str(encrypted, 'utf-8'))
 
-
-if (args.print_plaintext):
-    print(" Are you alone ? No body staring at your monitor ? OK to print plaintext ? [y or n]", end='->  ', flush=True)
-    userSays = sys.stdin.readline().rstrip('\n')
-    print("++++++++++++++++++++ Plain Text Alert +++++++++++++++++++++")
-    if userSays == 'y':
-        print (str(plaintext, 'utf-8'))
-        print ("You should definitely consult someone or may be print it on a t-shirt ")
-    else:
-        print("hmmmm good call. Written to " + temp_file_location)
-        write_to_file(plaintext)
-else:
-    # write plaintext to file.
-    write_to_file(plaintext)
 
 

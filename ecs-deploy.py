@@ -5,10 +5,6 @@ import argparse
 import pprint
 import sys
 
-# HARDCODED VARS
-clusterNameToSearch = 'rubix-atlas-ops-ECSCluster'
-serviceNameToSearch = 'rubix-publisher'
-
 
 ##############################################################################
 def debug(args):
@@ -18,8 +14,8 @@ def debug(args):
 
 
 ##############################################################################
-def die(Message='I am dying...'):
-    print("Error: {}".format(Message))
+def die(message='I am dying...'):
+    print("Error: {}".format(message))
     sys.exit(1)
 
 
@@ -89,7 +85,8 @@ def read_arguments():
 def main():
 
     args = read_arguments()
-
+    cluster_name_to_search = args.cluster
+    service_name_to_search = args.service
     debug(args)
 
     # create the kms client to do the decrypttion
@@ -97,11 +94,11 @@ def main():
 
     # Getting the cluster
     clusters = ecs_client.list_clusters()
-    cluster_arn = search_and_return_arn_from_haystack(clusters, 'clusterArns', clusterNameToSearch)
+    cluster_arn = search_and_return_arn_from_haystack(clusters, 'clusterArns', cluster_name_to_search)
 
     # Getting the services
     services = ecs_client.list_services(cluster=cluster_arn)
-    service_arn = search_and_return_arn_from_haystack(services, 'serviceArns', serviceNameToSearch)
+    service_arn = search_and_return_arn_from_haystack(services, 'serviceArns', service_name_to_search)
 
     # describing the service
     service_details = ecs_client.describe_services(cluster=cluster_arn, services=[service_arn])

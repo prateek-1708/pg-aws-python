@@ -2,7 +2,6 @@
 
 import os
 import time
-import datetime
 
 awsCredsExpiry = int(os.environ['AWS_CREDS_EXPIRY'])
 
