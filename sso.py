@@ -3,11 +3,11 @@
 import os
 import time
 
-awsCredsExpiry = int(os.environ['AWS_CREDS_EXPIRY'])
+aws_creds_expiry = int(os.environ['AWS_CREDS_EXPIRY'])
 
-awsCredsExpiryTimestamp = time.strftime('%Y-%m-%d %a %H:%M:%S', time.localtime(awsCredsExpiry))
-print(awsCredsExpiryTimestamp)
+aws_creds_expiry_timestamp = time.strftime('%Y-%m-%d %a %H:%M:%S', time.localtime(aws_creds_expiry))
+print("Cred Expire at ----> " + aws_creds_expiry_timestamp)
 
 
-currentTimestamp=time.strftime('%Y-%m-%d %a %H:%M:%S', time.localtime())
-print(currentTimestamp)
+current_timestamp = time.strftime('%Y-%m-%d %a %H:%M:%S', time.localtime())
+print("Time Now ----------> " + current_timestamp)

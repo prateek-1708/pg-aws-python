@@ -23,7 +23,7 @@ def aws_creds_expiry():
 # Init parser for command line args.
 parser = argparse.ArgumentParser("Decrypt KMS encrypted string")
 parser.add_argument("-e", "--encrypted-string", required=True,  help='KMS encrypted string that needs decrypting')
-parser.add_argument("-p", "--print-plaintext", action='store_true', default=False,  help='KMS encrypted string that needs decrypting')
+parser.add_argument("-p", "--print-plaintext", action='store_true', default=False, help='KMS encrypted string that needs decrypting')
 args = parser.parse_args()
 
 # Get the session to get the region name;
