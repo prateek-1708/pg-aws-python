@@ -1,0 +1,6 @@
+version: '2.1'
+services:
+  aws-py:
+    image: aws-src
+    build:
+      context: .

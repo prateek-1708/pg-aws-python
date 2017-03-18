@@ -19,6 +19,7 @@ read_only_pass = "2test"
 flush_privilege = "FLUSH PRIVILEGES"
 
 
+##############################################################################
 def get_connection():
     conn = ""
     try:
@@ -36,6 +37,7 @@ def get_connection():
     return conn
 
 
+##############################################################################
 def run_sql_commands(create_user, create_pass, privilege, cursor):
     create_user_sql = "CREATE OR REPLACE USER '" + create_user + "'@'%' IDENTIFIED BY '" + create_pass + "'"
     grant_sql = "GRANT " + privilege + " ON `" + db_name + "`.* to '" + create_user + "'@'%';"
@@ -43,10 +45,19 @@ def run_sql_commands(create_user, create_pass, privilege, cursor):
     cursor.execute(grant_sql)
     cursor.execute(flush_privilege)
 
-conn = get_connection()
 
-run_sql_commands(app_user, app_pass, "ALL PRIVILEGES", conn.cursor())
-run_sql_commands(read_only_user, read_only_pass, "SELECT", conn.cursor())
+##############################################################################
+def main():
 
-conn.cursor().close()
-conn.close()
+    conn = get_connection()
+
+    run_sql_commands(app_user, app_pass, "ALL PRIVILEGES", conn.cursor())
+    run_sql_commands(read_only_user, read_only_pass, "SELECT", conn.cursor())
+
+    conn.cursor().close()
+    conn.close()
+
+
+##############################################################################
+if __name__ == '__main__':
+    main()
