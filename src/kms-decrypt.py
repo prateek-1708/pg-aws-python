@@ -5,10 +5,13 @@ import base64
 import argparse
 import os
 import sys
-sys.path.append(os.getcwd())
-
-from helper import expiry
+import time
 temp_file_location = "/tmp/plaintext"
+
+
+##############################################################################
+def aws_creds_expiry():
+    return time.strftime('%Y-%m-%d %a %H:%M:%S', time.localtime(int(os.environ['AWS_CREDS_EXPIRY'])))
 
 
 ##############################################################################
@@ -33,7 +36,7 @@ def read_arguments():
         "--print-plaintext",
         action='store_true',
         default=False,
-        help='KMS encrypted string that needs decrypting'
+        help='Output decrypted string plaintext on the screen.'
     )
     args = parser.parse_args()
 
@@ -67,8 +70,8 @@ def main():
         decrypted = kms_client.decrypt(CiphertextBlob=blob)
     except Exception as e:
         print(str(e))
-        print(aws_region)
-        print("Credentials expire at: " + expiry.aws_creds_expiry())
+        print("You are trying to decrypt in: {}".format(aws_region))
+        print("Credentials expire at: {}".format(aws_creds_expiry()))
         sys.exit(1)
 
     plaintext = decrypted['Plaintext']
@@ -89,6 +92,7 @@ def main():
             write_to_file(plaintext)
     else:
         # write plaintext to file.
+        print("Writing plaintext to {}".format(temp_file_location))
         write_to_file(plaintext)
 
 ##############################################################################

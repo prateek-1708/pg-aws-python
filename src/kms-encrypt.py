@@ -5,9 +5,12 @@ import argparse
 import sys
 import os
 import base64
+import time
 
-sys.path.append(os.getcwd())
-from helper import expiry
+
+##############################################################################
+def aws_creds_expiry():
+    return time.strftime('%Y-%m-%d %a %H:%M:%S', time.localtime(int(os.environ['AWS_CREDS_EXPIRY'])))
 
 
 ##############################################################################
@@ -28,10 +31,10 @@ def read_arguments():
     args = parser.parse_args()
 
     if not args.plaintext:
-        parser.error("I mean you need to pass something to encrypt")
+        parser.error("Plaintext that needs encryption.")
 
     if not args.key_id:
-        parser.error("Key to use to encrypt")
+        parser.error("Key to use to encrypt.")
 
     return args
 
@@ -56,8 +59,8 @@ def main():
         )
     except Exception as e:
         print(str(e))
-        print(aws_region)
-        print("Credentials expire at: " + expiry.aws_creds_expiry())
+        print("You are trying to decrypt in: {}".format(aws_region))
+        print("Credentials expire at: {}".format(aws_creds_expiry()))
         sys.exit(1)
 
     # plaintext from the decrypted
