@@ -32,3 +32,4 @@ else:
     print("Current time:                   {}".format(currentTimestamp))
     print("Credentials will expire on:     {}".format(awsCredsExpiryTimestamp))
     print("You still have some time left:  {}".format(str(datetime.timedelta(seconds=delta))))
+    print("You are in region            :  {}".format(os.environ['AWS_DEFAULT_REGION']))
