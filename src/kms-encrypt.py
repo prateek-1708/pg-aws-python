@@ -25,16 +25,13 @@ def read_arguments():
     parser.add_argument(
         "-k",
         "--key-id",
-        required=True,
+        required=False,
         help='KMS key id to use'
     )
     args = parser.parse_args()
 
     if not args.plaintext:
         parser.error("Plaintext that needs encryption.")
-
-    if not args.key_id:
-        parser.error("Key to use to encrypt.")
 
     return args
 
@@ -51,10 +48,25 @@ def main():
     # create the kms client to do the decryption
     kms_client = boto3.client('kms')
 
+    # now if key wasn't passed as arg lets ask the user which key they want to use
+    if not pass_args.key_id:
+
+        # get List of kms keys
+        kms_response = kms_client.list_keys()
+
+        # build a list of key ids
+        keys = []
+        for response_item in kms_response['Keys']:
+            keys.append(response_item['KeyId'])
+        option = get_user_selection(keys)
+        key_id = keys[option - 1]
+    else:
+        key_id = pass_args.key_id
+
     # KMS decrypt
     try:
         encrypted = kms_client.encrypt(
-            KeyId=pass_args.key_id,
+            KeyId=key_id,
             Plaintext=pass_args.plaintext
         )
     except Exception as e:
@@ -66,6 +78,19 @@ def main():
     # plaintext from the decrypted
     encrypted = base64.b64encode(encrypted['CiphertextBlob'])
     print(str(encrypted, 'utf-8'))
+
+
+def get_user_selection(options):
+    print("Following keys were found in the region / account combination:")
+    for i, element in enumerate(options):
+        print("{}) {}".format(i+1, element))
+    i = input("Select a key to encrypt ")
+    try:
+        if 0 < int(i) <= len(options):
+            return int(i)
+    except:
+        print("Please enter a valid choice")
+    return None
 
 
 ##############################################################################

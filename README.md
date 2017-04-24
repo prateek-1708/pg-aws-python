@@ -49,3 +49,27 @@ Very minimalistic and simple python scripts Bourne from Shell scripts. Automatin
       If you don't select -p option the plaintext would be written to a file. If you do pass -p as an argument it would write the output to the screen.
       
       *NOTE:* This script in its current incarnation doesn't support context and token.. but will add soon.
+
+1. ```kms-encrypt.py```
+
+     KMS is one of the very powerful and easy to use service, where AWS takes the ownership of keys and the customers use them to encrypt there secrets. 
+     Although the AWS CLI command is pretty straight forward for doing this but, when you can write a wrapper for a wrapper which is a wrapper for a wrapper
+     wrapping your head around universe becomes very easy ... makes sense ? Anyway, this script accepts ```-p plaintext ``` and ``` -k key_id``` as args.
+     If you do not provide key-id the script will list out the kms-keys in the region / account combination which you have access to and you can select a key.
+     In order to use this script:
+     
+      1. Log in to aws if you have sso enabled for cli access, or if you use something like credulous make sure you have appropriate shell vars.
+      1. Please set the AWS_DEFAULT_REGION
+      1. Run the script.
+
+      *How do I run this script?*
+      
+      Run ```python3 ./src/kms-encrypt.py -h ```
+      
+      The above command prints help for the script listing out the params that could be passed.
+      
+      ```python3 ./src/kms-encrypt.py -p "mydirtysecret" -k 'asdasda-asdq2e1-key-id' ```
+      
+      It will output the encrypted string on the screen.
+      
+      *NOTE:* This script in its current incarnation doesn't support context and token.. but will add soon.
